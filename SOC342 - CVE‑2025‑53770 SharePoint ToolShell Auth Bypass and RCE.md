@@ -101,6 +101,83 @@
 ### Attack was Successful ?
 <img width="961" height="690" alt="image" src="https://github.com/user-attachments/assets/8229d2f2-2ceb-44b0-8048-60bcd1344e9e" />
 
+### To Know if the Attack is successful, we need to analyse Sharepoint01 endpoint
+### Navigate to the Endpoint Tab and enter the server name Sharepoint01
+### Now we can see the Processes, Network activity and Terminal and browser history
+### We can narrow the Investigation using the Timestamp Jul, 22, 2025, 01:07 PM
+<img width="1173" height="489" alt="image" src="https://github.com/user-attachments/assets/ed33611e-93e6-4141-89f4-58fe98bd64d1" />
+
+### As we can see w3wp.exe process is created on praticular time frame Event Time : 2025-07-22 13:07:11.000
+### If a website is vulnerable, attackers can get their code into it — and w3wp.exe unknowingly executes that code because it runs the website.
+### Here is the image path
+### C:\Program Files\Common Files\Microsoft Shared\Web Server Extensions\15\bin\w3wp.exe
+### Lets decode the encoded powershell command that was executed 
+<img width="746" height="485" alt="image" src="https://github.com/user-attachments/assets/07618984-ce26-4e03-9643-b45bea95cc6a" />
+
+### I'm using cyberchef to decode this base64 Encoding
+<img width="1920" height="853" alt="image" src="https://github.com/user-attachments/assets/5b8378bd-47bf-4a44-a035-aa23607b9fdd" />
+
+### Command: Malicious ASP.NET script (web shell snippet)
+### What it does: Extracts and displays ASP.NET Machine Keys (validation & decryption keys)
+### Impact: Allows attackers to bypass authentication and compromise the application
+
+### Next process name is csc.exe
+<img width="1148" height="440" alt="image" src="https://github.com/user-attachments/assets/9d3a4c06-9fb9-4692-8e90-9c5ffd11dc3a" />
+
+### Command: csc.exe /out:C:\Windows\Temp\payload.exe C:\Windows\Temp\payload.cs
+### What it does: Uses the C# compiler (csc.exe) to compile a C# source file (payload.cs) into an executable (payload.exe)
+### This command looks like it is turning the Base 64 script into a executable called payload.exe.
+
+### Now Attacker using command prompt
+<img width="745" height="174" alt="image" src="https://github.com/user-attachments/assets/42617227-c289-4fb4-a211-c01e7cdbae4b" />
+
+### CMD was ran using the payload.exe that was created earlier. The latest command made a file, spinstall0.aspx, with the remote executable, payload.exe, hosted at the IP 107.191.58.76.
+### Uses Windows command prompt (cmd.exe) to write a web shell (malicious ASP.NET code) into an .aspx file inside a SharePoint/IIS web-accessible directory.
+### .aspx files are executed by Microsoft Internet Information Services
+
+### Process id 9910 contains Hash
+<img width="748" height="159" alt="image" src="https://github.com/user-attachments/assets/042fbbb0-12a2-4d2a-ab2a-7652416df088" />
+
+### Lets Test in Virus Total
+<img width="1888" height="977" alt="image" src="https://github.com/user-attachments/assets/9e21ad57-0a58-41fa-b8bc-f0383f44b4bd" />
+
+### 41/60 Venders are flagged as Malicous the hash and the file spinstall0.aspx
+
+### SharePoint Attack Flow:
+
+### - Attacker exploits vulnerability in Microsoft Internet Information Services (IIS) / SharePoint  
+### - Drops malicious `.aspx` web shell using `cmd.exe` into web-accessible directory  
+### - Accesses web shell via browser → executes under `w3wp.exe`  
+### - Gains remote command execution (RCE) on the server  
+### - Runs ASP.NET script to extract MachineKey (validation/decryption keys)  
+### - Uses `csc.exe` to compile malicious C# code into `payload.exe`  
+### - Executes `payload.exe` to gain deeper system-level access (e.g., reverse shell)  
+### - Establishes persistence and Command & Control (C2) communication  
+<img width="980" height="374" alt="image" src="https://github.com/user-attachments/assets/82457c71-5f3b-4263-be4d-50c5d17aee9e" />
+
+### Attack was Successful: Yes
+<img width="981" height="658" alt="image" src="https://github.com/user-attachments/assets/6d472bba-fc0f-4a75-a764-d1c7f68f2e9a" />
+
+### Lets contain the Endpoint
+<img width="1687" height="633" alt="image" src="https://github.com/user-attachments/assets/4cf0c36e-514b-4e3f-af77-804218d0ab6d" />
+
+### Add the Artifacts to the Incident
+<img width="974" height="711" alt="image" src="https://github.com/user-attachments/assets/678b2046-261a-49be-88c6-eed89f6f979b" />
+
+### Yes, Perform teir2 escalation
+<img width="983" height="730" alt="image" src="https://github.com/user-attachments/assets/c2a44c8d-9d3d-4b6b-83aa-d5e606f5121e" />
+
+### Comment
+<img width="993" height="552" alt="image" src="https://github.com/user-attachments/assets/766d0416-ca39-4267-948d-d4244d83871a" />
+
+### After Completing the Incident response plan close the alert
+<img width="1491" height="584" alt="image" src="https://github.com/user-attachments/assets/766d61ad-1fa5-4407-b6eb-93002cc24b0c" />
+
+## Congratulations !!!  We have successfully investigated a real-world zero-day vulnerability.
+
+
+
+
 
 
 
